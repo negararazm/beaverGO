@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/google/uuid"
@@ -13,7 +14,7 @@ import (
 	_ "github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 
-	myTypes "github.com/mikleing/beaver/data"
+	myTypes "github.com/mikleing/beaverGO/data"
 )
 
 type Unit = myTypes.Unit
@@ -49,6 +50,14 @@ var leaseExpirationDateViews []LeaseExpirationDateView
 var leasePlaces []LeasePlace
 
 func getUnits(w http.ResponseWriter, r *http.Request) {
+	//---------------------------------------------------
+	f, err := os.OpenFile("units.json", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	defer f.Close()
+	//-----------------------------------------------------
 	results, err := dbCon.Query("SELECT Name, Floor, Id, Zone, UnitType, UnitNumber, FloorPlan, SquareFeet from Unit")
 	if err != nil {
 		panic(err.Error())
@@ -60,7 +69,20 @@ func getUnits(w http.ResponseWriter, r *http.Request) {
 			panic(err.Error())
 		}
 		units = append(units, unit)
+		//---------------------------------------------
+		b, err := json.Marshal(unit)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		f.Write(b)
+
+		//---------------------------------------------
 	}
+	//------
+	f.Close()
+	//------
 	fmt.Println("Endpoint Hit: All Units Endpoint")
 	json.NewEncoder(w).Encode(units)
 }
