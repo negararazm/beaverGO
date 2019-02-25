@@ -14,7 +14,7 @@ import (
 	_ "github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 
-	myTypes "github.com/mikleing/beaverGO/data"
+	myTypes "github.com/mikleing/beaverGO/cmd/getData/data"
 )
 
 type Unit = myTypes.Unit
@@ -223,6 +223,9 @@ func getDistricts(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("Endpoint Hit: All Districts Endpoint")
 	json.NewEncoder(w).Encode(districts)
+	for _, element := range districts {
+		fmt.Println(element.Name)
+	}
 }
 
 func getLeads(w http.ResponseWriter, r *http.Request) {
@@ -340,6 +343,7 @@ func main() {
 	defer dbCon.Close()
 	fmt.Println("connect success")
 	handleRequests()
+
 }
 
 func homePage(w http.ResponseWriter, r *http.Request) {

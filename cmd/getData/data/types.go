@@ -156,9 +156,10 @@ type LeasePrimaryPlaceView struct {
 	Lease        string `json:"lease"`
 	PrimaryPlace string `json:"unit"`
 }
+
 /*
 type PricingGroup struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
 }
-*?
+*/
