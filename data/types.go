@@ -46,6 +46,8 @@ const (
 	UTILITY             UnitType = "UTILITY"
 )
 
+//type UUID [16]byte
+
 type Unit struct {
 	Id         string         `json:"id"`
 	Zone       string         `json:"zone"`
@@ -149,3 +151,14 @@ type LeasePlace struct {
 	FinancialEndDate NullTime `json:"financialEndDate"`
 	Status           string   `json:"status"`
 }
+
+type LeasePrimaryPlaceView struct {
+	Lease        string `json:"lease"`
+	PrimaryPlace string `json:"unit"`
+}
+/*
+type PricingGroup struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+*?

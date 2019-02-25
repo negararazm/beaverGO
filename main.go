@@ -31,6 +31,7 @@ type Lease = myTypes.Lease
 type LeaseEndDateView = myTypes.LeaseEndDateView
 type LeaseExpirationDateView = myTypes.LeaseExpirationDateView
 type LeasePlace = myTypes.LeasePlace
+type LeasePrimaryPlaceView = myTypes.LeasePrimaryPlaceView
 
 var dbCon *sql.DB
 var err error
@@ -48,6 +49,7 @@ var leases []Lease
 var leaseEndDateViews []LeaseEndDateView
 var leaseExpirationDateViews []LeaseExpirationDateView
 var leasePlaces []LeasePlace
+var leasePrimaryPlaceViews []LeasePrimaryPlaceView
 
 func getUnits(w http.ResponseWriter, r *http.Request) {
 	//---------------------------------------------------
@@ -58,7 +60,7 @@ func getUnits(w http.ResponseWriter, r *http.Request) {
 	}
 	defer f.Close()
 	//-----------------------------------------------------
-	results, err := dbCon.Query("SELECT Name, Floor, Id, Zone, UnitType, UnitNumber, FloorPlan, SquareFeet from Unit")
+	results, err := dbCon.Query("SELECT Name, Floor, HEX(Id), HEX(Zone), UnitType, UnitNumber, FloorPlan, SquareFeet from Unit")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -88,7 +90,7 @@ func getUnits(w http.ResponseWriter, r *http.Request) {
 }
 
 func getZones(w http.ResponseWriter, r *http.Request) {
-	results, err := dbCon.Query("SELECT Id, Name, Property from Zone")
+	results, err := dbCon.Query("SELECT HEX(Id), Name, HEX(Property) from Zone")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -105,7 +107,7 @@ func getZones(w http.ResponseWriter, r *http.Request) {
 }
 
 func getProperties(w http.ResponseWriter, r *http.Request) {
-	results, err := dbCon.Query("SELECT Id, Name, PrimaryUnitType, DateBuilt, DateRemodeled, IdentificationCode, Community  from Property")
+	results, err := dbCon.Query("SELECT HEX(Id), Name, PrimaryUnitType, DateBuilt, DateRemodeled, IdentificationCode, HEX(Community)  from Property")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -122,7 +124,7 @@ func getProperties(w http.ResponseWriter, r *http.Request) {
 }
 
 func getCommunities(w http.ResponseWriter, r *http.Request) {
-	results, err := dbCon.Query("SELECT Id, Name from Community")
+	results, err := dbCon.Query("SELECT HEX(Id), Name from Community")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -139,7 +141,7 @@ func getCommunities(w http.ResponseWriter, r *http.Request) {
 }
 
 func getFloorPlans(w http.ResponseWriter, r *http.Request) {
-	results, err := dbCon.Query("SELECT Id, Name, Bedrooms, Bathrooms, PropertyMarketing from FloorPlan")
+	results, err := dbCon.Query("SELECT HEX(Id), Name, Bedrooms, Bathrooms, HEX(PropertyMarketing) from FloorPlan")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -156,7 +158,7 @@ func getFloorPlans(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAmenities(w http.ResponseWriter, r *http.Request) {
-	results, err := dbCon.Query("SELECT Id, Name, AmenityType from Amenity")
+	results, err := dbCon.Query("SELECT HEX(Id), Name, AmenityType from Amenity")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -173,7 +175,7 @@ func getAmenities(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAvailableUnitsViews(w http.ResponseWriter, r *http.Request) {
-	results, err := dbCon.Query("SELECT Unit, MoveOutDate, FinancialEndDate, VacantDate, MoveInDate from AvailableUnitsView")
+	results, err := dbCon.Query("SELECT HEX(Unit), MoveOutDate, FinancialEndDate, VacantDate, MoveInDate from AvailableUnitsView")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -190,7 +192,7 @@ func getAvailableUnitsViews(w http.ResponseWriter, r *http.Request) {
 }
 
 func getFloorPlanAmenities(w http.ResponseWriter, r *http.Request) {
-	results, err := dbCon.Query("SELECT Amenity, FloorPlan from FloorPlanAmenity")
+	results, err := dbCon.Query("SELECT HEX(Amenity), HEX(FloorPlan) from FloorPlanAmenity")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -207,7 +209,7 @@ func getFloorPlanAmenities(w http.ResponseWriter, r *http.Request) {
 }
 
 func getDistricts(w http.ResponseWriter, r *http.Request) {
-	results, err := dbCon.Query("SELECT Id, Name from District")
+	results, err := dbCon.Query("SELECT HEX(Id), Name from District")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -224,7 +226,7 @@ func getDistricts(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLeads(w http.ResponseWriter, r *http.Request) {
-	results, err := dbCon.Query("SELECT DateReceived, PhoneNumber, EmailAddress, TrackingType, District from Lead")
+	results, err := dbCon.Query("SELECT DateReceived, PhoneNumber, EmailAddress, TrackingType, HEX(District) from Lead")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -241,7 +243,7 @@ func getLeads(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLeases(w http.ResponseWriter, r *http.Request) {
-	results, err := dbCon.Query("SELECT Id from Lease")
+	results, err := dbCon.Query("SELECT HEX(Id) from Lease")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -258,7 +260,7 @@ func getLeases(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLeaseEndDateViews(w http.ResponseWriter, r *http.Request) {
-	results, err := dbCon.Query("SELECT Lease, EndDate from LeaseEndDateView")
+	results, err := dbCon.Query("SELECT HEX(Lease), EndDate from LeaseEndDateView")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -275,7 +277,7 @@ func getLeaseEndDateViews(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLeaseExpirationDateViews(w http.ResponseWriter, r *http.Request) {
-	results, err := dbCon.Query("SELECT Lease, ExpirationDate from LeaseExpirationDateView")
+	results, err := dbCon.Query("SELECT HEX(Lease), ExpirationDate from LeaseExpirationDateView")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -292,7 +294,7 @@ func getLeaseExpirationDateViews(w http.ResponseWriter, r *http.Request) {
 }
 
 func getLeasePlaces(w http.ResponseWriter, r *http.Request) {
-	results, err := dbCon.Query("SELECT StartDate, Lease, Place, FinancialEndDate, Status from LeasePlace")
+	results, err := dbCon.Query("SELECT StartDate, HEX(Lease), HEX(Place), FinancialEndDate, Status from LeasePlace")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -306,6 +308,23 @@ func getLeasePlaces(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("Endpoint Hit: All LeasePlaces Endpoint")
 	json.NewEncoder(w).Encode(leasePlaces)
+}
+
+func getLeasePrimaryPlaceView(w http.ResponseWriter, r *http.Request) {
+	results, err := dbCon.Query("SELECT HEX(Lease), HEX(PrimaryPlace) from LeasePrimaryPlaceView")
+	if err != nil {
+		panic(err.Error())
+	}
+	for results.Next() {
+		var leasePrimaryPlaceView LeasePrimaryPlaceView
+		err = results.Scan(&leasePrimaryPlaceView.Lease, &leasePrimaryPlaceView.PrimaryPlace)
+		if err != nil {
+			panic(err.Error())
+		}
+		leasePrimaryPlaceViews = append(leasePrimaryPlaceViews, leasePrimaryPlaceView)
+	}
+	fmt.Println("Endpoint Hit: All LeasePlaces Endpoint")
+	json.NewEncoder(w).Encode(leasePrimaryPlaceViews)
 }
 
 func dbConnect() (*sql.DB, error) {
@@ -345,6 +364,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/leaseEndDateViews", getLeaseEndDateViews).Methods("GET")
 	myRouter.HandleFunc("/leaseExpirationDateViews", getLeaseExpirationDateViews).Methods("GET")
 	myRouter.HandleFunc("/leasePlaces", getLeasePlaces).Methods("GET")
+	myRouter.HandleFunc("/leasePrimaryPlaceViews", getLeasePrimaryPlaceView).Methods("GET")
 	//myRouter.HandleFunc("/units", postUnits).Methods("POST")
 	//myRouter.HandleFunc("/units/{name}", oneUnit).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8083", myRouter))
