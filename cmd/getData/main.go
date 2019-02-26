@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/google/uuid"
@@ -17,21 +18,53 @@ import (
 	myTypes "github.com/mikleing/beaverGO/cmd/getData/data"
 )
 
+//Unit is an apartment unit consists of id, zone which is another entty, and etc
 type Unit = myTypes.Unit
+
+//Zone is a group of buildings or storages or garages
 type Zone = myTypes.Zone
+
+//Community is a group of buildings
 type Community = myTypes.Community
+
+//FloorPlan includes number of bedrooms and bathrooms, and etc
 type FloorPlan = myTypes.FloorPlan
+
+//Property is a building
 type Property = myTypes.Property
+
+//Amenity includes id and name and type
 type Amenity = myTypes.Amenity
+
+//AvailableUnitsView includes dates and units
 type AvailableUnitsView = myTypes.AvailableUnitsView
+
+//FloorPlanAmenity consists of Amenity ids and FloorPlan ids
 type FloorPlanAmenity = myTypes.FloorPlanAmenity
+
+//District includes id and name
 type District = myTypes.District
+
+//Lead includes dates, eail, phone number, and etc
 type Lead = myTypes.Lead
+
+//Lease includes only Lease
 type Lease = myTypes.Lease
+
+//LeaseEndDateView includes Lease and EndDate
 type LeaseEndDateView = myTypes.LeaseEndDateView
+
+//LeaseExpirationDateView includes Lease and ExpirationDate
 type LeaseExpirationDateView = myTypes.LeaseExpirationDateView
+
+//LeasePlace includes Lease, Place, and dates
 type LeasePlace = myTypes.LeasePlace
+
+//LeasePrimaryPlaceView has lease id and unit id
 type LeasePrimaryPlaceView = myTypes.LeasePrimaryPlaceView
+
+//MoveIn include name of the community, number of bedrooms and bathrooms and moveInDate
+type MoveIn = myTypes.MoveIn
 
 var dbCon *sql.DB
 var err error
@@ -50,6 +83,7 @@ var leaseEndDateViews []LeaseEndDateView
 var leaseExpirationDateViews []LeaseExpirationDateView
 var leasePlaces []LeasePlace
 var leasePrimaryPlaceViews []LeasePrimaryPlaceView
+var moveIns []MoveIn
 
 func getUnits(w http.ResponseWriter, r *http.Request) {
 	//---------------------------------------------------
@@ -66,7 +100,7 @@ func getUnits(w http.ResponseWriter, r *http.Request) {
 	}
 	for results.Next() {
 		var unit Unit
-		err = results.Scan(&unit.Name, &unit.Floor, &unit.Id, &unit.Zone, &unit.UnitType, &unit.UnitNumber, &unit.FloorPlan, &unit.SquareFeet)
+		err = results.Scan(&unit.Name, &unit.Floor, &unit.ID, &unit.Zone, &unit.UnitType, &unit.UnitNumber, &unit.FloorPlan, &unit.SquareFeet)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -96,7 +130,7 @@ func getZones(w http.ResponseWriter, r *http.Request) {
 	}
 	for results.Next() {
 		var zone Zone
-		err = results.Scan(&zone.Id, &zone.Name, &zone.Property)
+		err = results.Scan(&zone.ID, &zone.Name, &zone.Property)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -113,7 +147,7 @@ func getProperties(w http.ResponseWriter, r *http.Request) {
 	}
 	for results.Next() {
 		var property Property
-		err = results.Scan(&property.Id, &property.Name, &property.PrimaryUnitType, &property.DateBuilt, &property.DateRemodeled, &property.IdentificationCode, &property.Community)
+		err = results.Scan(&property.ID, &property.Name, &property.PrimaryUnitType, &property.DateBuilt, &property.DateRemodeled, &property.IdentificationCode, &property.Community)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -130,7 +164,7 @@ func getCommunities(w http.ResponseWriter, r *http.Request) {
 	}
 	for results.Next() {
 		var community Community
-		err = results.Scan(&community.Id, &community.Name)
+		err = results.Scan(&community.ID, &community.Name)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -147,7 +181,7 @@ func getFloorPlans(w http.ResponseWriter, r *http.Request) {
 	}
 	for results.Next() {
 		var floorPlan FloorPlan
-		err = results.Scan(&floorPlan.Id, &floorPlan.Name, &floorPlan.Bedrooms, &floorPlan.Bathrooms, &floorPlan.PropertyMarketing)
+		err = results.Scan(&floorPlan.ID, &floorPlan.Name, &floorPlan.Bedrooms, &floorPlan.Bathrooms, &floorPlan.PropertyMarketing)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -164,7 +198,7 @@ func getAmenities(w http.ResponseWriter, r *http.Request) {
 	}
 	for results.Next() {
 		var amenity Amenity
-		err = results.Scan(&amenity.Id, &amenity.Name, &amenity.AmenityType)
+		err = results.Scan(&amenity.ID, &amenity.Name, &amenity.AmenityType)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -215,7 +249,7 @@ func getDistricts(w http.ResponseWriter, r *http.Request) {
 	}
 	for results.Next() {
 		var district District
-		err = results.Scan(&district.Id, &district.Name)
+		err = results.Scan(&district.ID, &district.Name)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -223,9 +257,7 @@ func getDistricts(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("Endpoint Hit: All Districts Endpoint")
 	json.NewEncoder(w).Encode(districts)
-	for _, element := range districts {
-		fmt.Println(element.Name)
-	}
+	test()
 }
 
 func getLeads(w http.ResponseWriter, r *http.Request) {
@@ -252,7 +284,7 @@ func getLeases(w http.ResponseWriter, r *http.Request) {
 	}
 	for results.Next() {
 		var lease Lease
-		err = results.Scan(&lease.Id)
+		err = results.Scan(&lease.ID)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -330,6 +362,40 @@ func getLeasePrimaryPlaceView(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(leasePrimaryPlaceViews)
 }
 
+//------------------
+func getMoveIns(w http.ResponseWriter, r *http.Request) {
+	query := `select c.name, f.bedrooms, f.bathrooms, min(p.startDate) 
+	from Lease l 
+	join LeasePlace p on p.lease = l.id 
+	join LeasePrimaryPlaceView v on v.lease = l.id 
+	join Unit u on v.primaryPlace = u.id 
+	join FloorPlan f on f.id = u.floorPlan 
+	join Community c on f.propertyMarketing = c.id 
+	where (u.unitType like "APARTMENT" or u.unitType like "TOWNHOME" OR u.unitType like "HOUSE")
+	group by l.id
+	order by c.name, f.bedrooms, f.bathrooms, min(p.startDate);`
+
+	results, err := dbCon.Query(query)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for results.Next() {
+		var moveIn MoveIn
+		err = results.Scan(&moveIn.Name, &moveIn.Bedrooms, &moveIn.Bathrooms, &moveIn.MoveInDate)
+		if err != nil {
+			panic(err.Error())
+		}
+		moveIns = append(moveIns, moveIn)
+	}
+
+	fmt.Println("Endpoint Hit: All MoveIns Endpoint")
+	json.NewEncoder(w).Encode(moveIns)
+	test()
+}
+
+//--------------------
+
 func dbConnect() (*sql.DB, error) {
 	db, err := sql.Open("mysql", "negar:E%ycRw4MxjR6u!M2YpvDN9Cq6d^tT58n@tcp(production.cm4fwnwaa3mf.us-east-1.rds.amazonaws.com:3306)/production?parseTime=true")
 	if err != nil {
@@ -342,8 +408,33 @@ func main() {
 	dbCon, err = dbConnect()
 	defer dbCon.Close()
 	fmt.Println("connect success")
+	//test()
 	handleRequests()
+}
 
+func test() {
+	n := 3.0
+	m := make(map[int]int)
+	loc, _ := time.LoadLocation("UTC")
+	dateNow := time.Now().In(loc)
+	for _, element := range moveIns {
+		//fmt.Println(element.Name)
+
+		if element.MoveInDate.Valid == true {
+			diff := dateNow.Sub(element.MoveInDate.Time).Hours() / 24
+			if element.MoveInDate.Time.Before(dateNow) && diff < (365*n) {
+				//if element.Name == "Emberwood Apartments" && element.Bedrooms.Float64 == 1.0 {
+				//fmt.Println(m[int(element.MoveInDate.Time.Month())][2])
+				//}
+				m[int(element.MoveInDate.Time.Month())] = m[int(element.MoveInDate.Time.Month())] + 1
+				//fmt.Println(m[int(element.MoveInDate.Time.Month())])
+				//fmt.Println(diff)
+				//fmt.Println(int(element.MoveInDate.Time.Month()))
+			}
+
+		}
+	}
+	fmt.Println(m)
 }
 
 func homePage(w http.ResponseWriter, r *http.Request) {
@@ -369,6 +460,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/leaseExpirationDateViews", getLeaseExpirationDateViews).Methods("GET")
 	myRouter.HandleFunc("/leasePlaces", getLeasePlaces).Methods("GET")
 	myRouter.HandleFunc("/leasePrimaryPlaceViews", getLeasePrimaryPlaceView).Methods("GET")
+	myRouter.HandleFunc("/moveIns", getMoveIns).Methods("GET")
 	//myRouter.HandleFunc("/units", postUnits).Methods("POST")
 	//myRouter.HandleFunc("/units/{name}", oneUnit).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8083", myRouter))
