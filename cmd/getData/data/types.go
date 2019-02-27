@@ -186,7 +186,8 @@ type MoveIn struct {
 
 /*
 type PricingGroup struct {
-	Id   string `json:"id"`
+	Community   string `json:"community"`
+	FloorPlan string `json:"floorPlan"`
 	Name string `json:"name"`
 }
 */
