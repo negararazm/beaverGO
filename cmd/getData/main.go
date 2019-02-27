@@ -94,7 +94,7 @@ func getUnits(w http.ResponseWriter, r *http.Request) {
 	}
 	defer f.Close()
 	//-----------------------------------------------------
-	results, err := dbCon.Query("SELECT Name, Floor, HEX(Id), HEX(Zone), UnitType, UnitNumber, FloorPlan, SquareFeet from Unit")
+	results, err := dbCon.Query("SELECT Name, Floor, HEX(Id), HEX(Zone), UnitType, UnitNumber, HEX(FloorPlan), SquareFeet from Unit")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -417,9 +417,10 @@ func test() {
 	m := make(map[int]int)
 	loc, _ := time.LoadLocation("UTC")
 	dateNow := time.Now().In(loc)
+	i := 0
 	for _, element := range moveIns {
 		//fmt.Println(element.Name)
-
+		i++
 		if element.MoveInDate.Valid == true {
 			diff := dateNow.Sub(element.MoveInDate.Time).Hours() / 24
 			if element.MoveInDate.Time.Before(dateNow) && diff < (365*n) {
@@ -435,6 +436,7 @@ func test() {
 		}
 	}
 	fmt.Println(m)
+	fmt.Println(i)
 }
 
 func homePage(w http.ResponseWriter, r *http.Request) {
