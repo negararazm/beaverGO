@@ -184,10 +184,9 @@ type MoveIn struct {
 	MoveInDate NullTime        `json:"moveInDate"`
 }
 
-/*
+//PricingGroup includes Community, primary and name of the pricingGroup
 type PricingGroup struct {
-	Community   string `json:"community"`
-	FloorPlan string `json:"floorPlan"`
-	Name string `json:"name"`
+	Community string  `json:"community"`
+	Bedrooms  float64 `json:"bedrooms"`
+	Name      string  `json:"name"`
 }
-*/

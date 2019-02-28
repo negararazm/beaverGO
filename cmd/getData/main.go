@@ -66,6 +66,9 @@ type LeasePrimaryPlaceView = myTypes.LeasePrimaryPlaceView
 //MoveIn include name of the community, number of bedrooms and bathrooms and moveInDate
 type MoveIn = myTypes.MoveIn
 
+//PricingGroup includes FloorPlan, Community and name of the pricingGroup
+type PricingGroup = myTypes.PricingGroup
+
 var dbCon *sql.DB
 var err error
 var units []Unit
@@ -84,6 +87,7 @@ var leaseExpirationDateViews []LeaseExpirationDateView
 var leasePlaces []LeasePlace
 var leasePrimaryPlaceViews []LeasePrimaryPlaceView
 var moveIns []MoveIn
+var pricingGroups []PricingGroup
 
 func getUnits(w http.ResponseWriter, r *http.Request) {
 	//---------------------------------------------------
@@ -362,7 +366,6 @@ func getLeasePrimaryPlaceView(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(leasePrimaryPlaceViews)
 }
 
-//------------------
 func getMoveIns(w http.ResponseWriter, r *http.Request) {
 	query := `select c.name, f.bedrooms, f.bathrooms, min(p.startDate) 
 	from Lease l 
@@ -394,7 +397,38 @@ func getMoveIns(w http.ResponseWriter, r *http.Request) {
 	test()
 }
 
-//--------------------
+func getPricingGroups(w http.ResponseWriter, r *http.Request) {
+	query := `select c.name as Community, f.bedrooms as Bedrooms,
+    case when c.name in ('Cedarwood Apartments', 'Greystone Apartments', 'Pineridge Apartments', 'Birchview Apartments', 'Maple Court Apartments') then 'CLASSIC'
+         when c.name = 'Emberwood Apartments' and f.bedrooms = 3 then 'EBW3'
+         when c.name = 'Emberwood Apartments' and f.bedrooms = 2 then 'EBW2'
+         when c.name = 'Emberwood Apartments' and f.bedrooms = 1 then 'EBW1'
+         when c.name = 'Mill Pond Forest Apartments' then 'MPF'
+         when c.name = 'Mill Pond II & III Apartments' and f.bedrooms = 2 then 'MP2'
+         when c.name = 'Mill Pond II & III Apartments' and f.bedrooms = 3 then 'MP3'
+         when c.name = 'Gateway Green Townhomes' then 'GGT'
+         when c.name in ('256 Duplex', '243 House', '555 House', '489 House', '607 House') then 'HOUSE'
+    end as Name
+    from Community c
+    join FloorPlan f on f.propertyMarketing = c.id
+    where c.name not like "%Storage" and c.name not like "Gateway Green Apartments";`
+	results, err := dbCon.Query(query)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for results.Next() {
+		var pricingGroup PricingGroup
+		err = results.Scan(&pricingGroup.Community, &pricingGroup.Bedrooms, &pricingGroup.Name)
+		if err != nil {
+			panic(err.Error())
+		}
+		pricingGroups = append(pricingGroups, pricingGroup)
+	}
+
+	fmt.Println("Endpoint Hit: All MoveIns Endpoint")
+	json.NewEncoder(w).Encode(pricingGroups)
+}
 
 func dbConnect() (*sql.DB, error) {
 	db, err := sql.Open("mysql", "negar:E%ycRw4MxjR6u!M2YpvDN9Cq6d^tT58n@tcp(production.cm4fwnwaa3mf.us-east-1.rds.amazonaws.com:3306)/production?parseTime=true")
@@ -414,28 +448,55 @@ func main() {
 
 func test() {
 	n := 3.0
-	m := make(map[int]int)
+	//slice := []int{0, 0, 0, 0, 0, 0, 0, 0, 0}
+	//m := make(map[int][]int)
+	mMonth := map[string][]int{
+		"HOUSE":   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"CLASSIC": {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"EBW1":    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"EBW2":    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"EBW3":    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"MP2":     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"MP3":     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"GGT":     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"MPF":     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	}
+
+	mDay := map[string][]int{
+		"HOUSE":   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"CLASSIC": {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"EBW1":    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"EBW2":    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"EBW3":    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"MP2":     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"MP3":     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"GGT":     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		"MPF":     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+	}
+
 	loc, _ := time.LoadLocation("UTC")
 	dateNow := time.Now().In(loc)
 	i := 0
-	for _, element := range moveIns {
-		//fmt.Println(element.Name)
-		i++
-		if element.MoveInDate.Valid == true {
-			diff := dateNow.Sub(element.MoveInDate.Time).Hours() / 24
-			if element.MoveInDate.Time.Before(dateNow) && diff < (365*n) {
-				//if element.Name == "Emberwood Apartments" && element.Bedrooms.Float64 == 1.0 {
-				//fmt.Println(m[int(element.MoveInDate.Time.Month())][2])
-				//}
-				m[int(element.MoveInDate.Time.Month())] = m[int(element.MoveInDate.Time.Month())] + 1
-				//fmt.Println(m[int(element.MoveInDate.Time.Month())])
-				//fmt.Println(diff)
-				//fmt.Println(int(element.MoveInDate.Time.Month()))
-			}
+	for _, element2 := range pricingGroups {
+		for _, element1 := range moveIns {
+			//fmt.Println(element.Name)
+			i++
+			if element1.MoveInDate.Valid == true {
+				diff := dateNow.Sub(element1.MoveInDate.Time).Hours() / 24
+				if element1.MoveInDate.Time.Before(dateNow) && diff < (365*n) {
+					//fmt.Println(element1.Bedrooms.Float64)
 
+					if element2.Community == element1.Name && element2.Bedrooms == element1.Bedrooms.Float64 {
+						(mMonth[element2.Name][int(element1.MoveInDate.Time.Month())-1]) = (mMonth[element2.Name][int(element1.MoveInDate.Time.Month())-1]) + 1
+						(mDay[element2.Name][int(element1.MoveInDate.Time.Day())-1]) = (mDay[element2.Name][int(element1.MoveInDate.Time.Day())-1]) + 1
+					}
+					//fmt.Println(m[int(element.MoveInDate.Time.Month())])
+				}
+			}
 		}
 	}
-	fmt.Println(m)
+	fmt.Println(mMonth)
+	fmt.Println(mDay)
 	fmt.Println(i)
 }
 
@@ -463,6 +524,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/leasePlaces", getLeasePlaces).Methods("GET")
 	myRouter.HandleFunc("/leasePrimaryPlaceViews", getLeasePrimaryPlaceView).Methods("GET")
 	myRouter.HandleFunc("/moveIns", getMoveIns).Methods("GET")
+	myRouter.HandleFunc("/pricingGroups", getPricingGroups).Methods("GET")
 	//myRouter.HandleFunc("/units", postUnits).Methods("POST")
 	//myRouter.HandleFunc("/units/{name}", oneUnit).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8083", myRouter))
