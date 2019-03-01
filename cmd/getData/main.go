@@ -124,7 +124,9 @@ func getUnits(w http.ResponseWriter, r *http.Request) {
 	f.Close()
 	//------
 	fmt.Println("Endpoint Hit: All Units Endpoint")
-	json.NewEncoder(w).Encode(units)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(units)
 }
 
 func getZones(w http.ResponseWriter, r *http.Request) {
@@ -141,7 +143,9 @@ func getZones(w http.ResponseWriter, r *http.Request) {
 		zones = append(zones, zone)
 	}
 	fmt.Println("Endpoint Hit: All Zones Endpoint")
-	json.NewEncoder(w).Encode(zones)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(zones)
 }
 
 func getProperties(w http.ResponseWriter, r *http.Request) {
@@ -158,7 +162,9 @@ func getProperties(w http.ResponseWriter, r *http.Request) {
 		properties = append(properties, property)
 	}
 	fmt.Println("Endpoint Hit: All Properties Endpoint")
-	json.NewEncoder(w).Encode(properties)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(properties)
 }
 
 func getCommunities(w http.ResponseWriter, r *http.Request) {
@@ -175,7 +181,9 @@ func getCommunities(w http.ResponseWriter, r *http.Request) {
 		communities = append(communities, community)
 	}
 	fmt.Println("Endpoint Hit: All Communities Endpoint")
-	json.NewEncoder(w).Encode(communities)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(communities)
 }
 
 func getFloorPlans(w http.ResponseWriter, r *http.Request) {
@@ -192,7 +200,9 @@ func getFloorPlans(w http.ResponseWriter, r *http.Request) {
 		floorPlans = append(floorPlans, floorPlan)
 	}
 	fmt.Println("Endpoint Hit: All FloorPlans Endpoint")
-	json.NewEncoder(w).Encode(floorPlans)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(floorPlans)
 }
 
 func getAmenities(w http.ResponseWriter, r *http.Request) {
@@ -209,7 +219,9 @@ func getAmenities(w http.ResponseWriter, r *http.Request) {
 		amenities = append(amenities, amenity)
 	}
 	fmt.Println("Endpoint Hit: All Amenities Endpoint")
-	json.NewEncoder(w).Encode(amenities)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(amenities)
 }
 
 func getAvailableUnitsViews(w http.ResponseWriter, r *http.Request) {
@@ -226,7 +238,9 @@ func getAvailableUnitsViews(w http.ResponseWriter, r *http.Request) {
 		availableUnitsViews = append(availableUnitsViews, availableUnitsView)
 	}
 	fmt.Println("Endpoint Hit: All AvailableUnitsViews Endpoint")
-	json.NewEncoder(w).Encode(availableUnitsViews)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(availableUnitsViews)
 }
 
 func getFloorPlanAmenities(w http.ResponseWriter, r *http.Request) {
@@ -243,7 +257,9 @@ func getFloorPlanAmenities(w http.ResponseWriter, r *http.Request) {
 		floorPlanAmenities = append(floorPlanAmenities, floorPlanAmenity)
 	}
 	fmt.Println("Endpoint Hit: All FloorPlanAmenities Endpoint")
-	json.NewEncoder(w).Encode(floorPlanAmenities)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(floorPlanAmenities)
 }
 
 func getDistricts(w http.ResponseWriter, r *http.Request) {
@@ -260,7 +276,9 @@ func getDistricts(w http.ResponseWriter, r *http.Request) {
 		districts = append(districts, district)
 	}
 	fmt.Println("Endpoint Hit: All Districts Endpoint")
-	json.NewEncoder(w).Encode(districts)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(districts)
 	test()
 }
 
@@ -278,7 +296,9 @@ func getLeads(w http.ResponseWriter, r *http.Request) {
 		leads = append(leads, lead)
 	}
 	fmt.Println("Endpoint Hit: All Leads Endpoint")
-	json.NewEncoder(w).Encode(leads)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(leads)
 }
 
 func getLeases(w http.ResponseWriter, r *http.Request) {
@@ -295,7 +315,9 @@ func getLeases(w http.ResponseWriter, r *http.Request) {
 		leases = append(leases, lease)
 	}
 	fmt.Println("Endpoint Hit: All Leases Endpoint")
-	json.NewEncoder(w).Encode(leases)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(leases)
 }
 
 func getLeaseEndDateViews(w http.ResponseWriter, r *http.Request) {
@@ -312,7 +334,9 @@ func getLeaseEndDateViews(w http.ResponseWriter, r *http.Request) {
 		leaseEndDateViews = append(leaseEndDateViews, leaseEndDateView)
 	}
 	fmt.Println("Endpoint Hit: All LeaseEndDateViews Endpoint")
-	json.NewEncoder(w).Encode(leaseEndDateViews)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(leaseEndDateViews)
 }
 
 func getLeaseExpirationDateViews(w http.ResponseWriter, r *http.Request) {
@@ -329,7 +353,9 @@ func getLeaseExpirationDateViews(w http.ResponseWriter, r *http.Request) {
 		leaseExpirationDateViews = append(leaseExpirationDateViews, leaseExpirationDateView)
 	}
 	fmt.Println("Endpoint Hit: All LeaseExpirationDateViews Endpoint")
-	json.NewEncoder(w).Encode(leaseExpirationDateViews)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(leaseExpirationDateViews)
 }
 
 func getLeasePlaces(w http.ResponseWriter, r *http.Request) {
@@ -346,7 +372,9 @@ func getLeasePlaces(w http.ResponseWriter, r *http.Request) {
 		leasePlaces = append(leasePlaces, leasePlace)
 	}
 	fmt.Println("Endpoint Hit: All LeasePlaces Endpoint")
-	json.NewEncoder(w).Encode(leasePlaces)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(leasePlaces)
 }
 
 func getLeasePrimaryPlaceView(w http.ResponseWriter, r *http.Request) {
@@ -363,7 +391,9 @@ func getLeasePrimaryPlaceView(w http.ResponseWriter, r *http.Request) {
 		leasePrimaryPlaceViews = append(leasePrimaryPlaceViews, leasePrimaryPlaceView)
 	}
 	fmt.Println("Endpoint Hit: All LeasePlaces Endpoint")
-	json.NewEncoder(w).Encode(leasePrimaryPlaceViews)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(leasePrimaryPlaceViews)
 }
 
 func getMoveIns(w http.ResponseWriter, r *http.Request) {
@@ -393,7 +423,9 @@ func getMoveIns(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println("Endpoint Hit: All MoveIns Endpoint")
-	json.NewEncoder(w).Encode(moveIns)
+	enc := json.NewEncoder(w)
+	enc.SetEscapeHTML(false)
+	enc.Encode(moveIns)
 	test()
 }
 
@@ -451,6 +483,7 @@ func test() {
 	//slice := []int{0, 0, 0, 0, 0, 0, 0, 0, 0}
 	//m := make(map[int][]int)
 	mMonth := map[string][]int{
+		"TOTAL":   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		"HOUSE":   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		"CLASSIC": {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		"EBW1":    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -463,6 +496,7 @@ func test() {
 	}
 
 	mDay := map[string][]int{
+		"TOTAL":   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		"HOUSE":   {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		"CLASSIC": {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		"EBW1":    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -477,27 +511,52 @@ func test() {
 	loc, _ := time.LoadLocation("UTC")
 	dateNow := time.Now().In(loc)
 	i := 0
-	for _, element2 := range pricingGroups {
-		for _, element1 := range moveIns {
-			//fmt.Println(element.Name)
-			i++
-			if element1.MoveInDate.Valid == true {
-				diff := dateNow.Sub(element1.MoveInDate.Time).Hours() / 24
-				if element1.MoveInDate.Time.Before(dateNow) && diff < (365*n) {
-					//fmt.Println(element1.Bedrooms.Float64)
-
-					if element2.Community == element1.Name && element2.Bedrooms == element1.Bedrooms.Float64 {
-						(mMonth[element2.Name][int(element1.MoveInDate.Time.Month())-1]) = (mMonth[element2.Name][int(element1.MoveInDate.Time.Month())-1]) + 1
-						(mDay[element2.Name][int(element1.MoveInDate.Time.Day())-1]) = (mDay[element2.Name][int(element1.MoveInDate.Time.Day())-1]) + 1
-					}
-					//fmt.Println(m[int(element.MoveInDate.Time.Month())])
+	for _, element1 := range moveIns {
+		i++
+		if element1.MoveInDate.Valid == true {
+			diff := dateNow.Sub(element1.MoveInDate.Time).Hours() / 24
+			if element1.MoveInDate.Time.Before(dateNow) && diff < (365*n) {
+				(mMonth["TOTAL"][int(element1.MoveInDate.Time.Month())-1]) = (mMonth["TOTAL"][int(element1.MoveInDate.Time.Month())-1]) + 1
+				(mDay["TOTAL"][int(element1.MoveInDate.Time.Day())-1]) = (mDay["TOTAL"][int(element1.MoveInDate.Time.Day())-1]) + 1
+				if element1.Name == "Emberwood Apartments" && element1.Bedrooms.Float64 == 1.0 {
+					(mMonth["EBW1"][int(element1.MoveInDate.Time.Month())-1]) = (mMonth["EBW1"][int(element1.MoveInDate.Time.Month())-1]) + 1
+					(mDay["EBW1"][int(element1.MoveInDate.Time.Day())-1]) = (mDay["EBW1"][int(element1.MoveInDate.Time.Day())-1]) + 1
+				} else if element1.Name == "Emberwood Apartments" && element1.Bedrooms.Float64 == 2.0 {
+					(mMonth["EBW2"][int(element1.MoveInDate.Time.Month())-1]) = (mMonth["EBW2"][int(element1.MoveInDate.Time.Month())-1]) + 1
+					(mDay["EBW2"][int(element1.MoveInDate.Time.Day())-1]) = (mDay["EBW2"][int(element1.MoveInDate.Time.Day())-1]) + 1
+				} else if element1.Name == "Emberwood Apartments" && element1.Bedrooms.Float64 == 3.0 {
+					(mMonth["EBW3"][int(element1.MoveInDate.Time.Month())-1]) = (mMonth["EBW3"][int(element1.MoveInDate.Time.Month())-1]) + 1
+					(mDay["EBW3"][int(element1.MoveInDate.Time.Day())-1]) = (mDay["EBW3"][int(element1.MoveInDate.Time.Day())-1]) + 1
+				} else if element1.Name == "Mill Pond II & III Apartments" && element1.Bedrooms.Float64 == 2.0 {
+					fmt.Println("YES")
+					(mMonth["MP2"][int(element1.MoveInDate.Time.Month())-1]) = (mMonth["MP2"][int(element1.MoveInDate.Time.Month())-1]) + 1
+					(mDay["MP2"][int(element1.MoveInDate.Time.Day())-1]) = (mDay["MP2"][int(element1.MoveInDate.Time.Day())-1]) + 1
+				} else if element1.Name == "Mill Pond II & III Apartments" && element1.Bedrooms.Float64 == 3.0 {
+					(mMonth["MP3"][int(element1.MoveInDate.Time.Month())-1]) = (mMonth["MP3"][int(element1.MoveInDate.Time.Month())-1]) + 1
+					(mDay["MP3"][int(element1.MoveInDate.Time.Day())-1]) = (mDay["MP3"][int(element1.MoveInDate.Time.Day())-1]) + 1
+				} else if element1.Name == "Mill Pond Forest Apartments" {
+					(mMonth["MPF"][int(element1.MoveInDate.Time.Month())-1]) = (mMonth["MPF"][int(element1.MoveInDate.Time.Month())-1]) + 1
+					(mDay["MPF"][int(element1.MoveInDate.Time.Day())-1]) = (mDay["MPF"][int(element1.MoveInDate.Time.Day())-1]) + 1
+				} else if element1.Name == "Gateway Green Townhomes" {
+					(mMonth["GGT"][int(element1.MoveInDate.Time.Month())-1]) = (mMonth["GGT"][int(element1.MoveInDate.Time.Month())-1]) + 1
+					(mDay["GGT"][int(element1.MoveInDate.Time.Day())-1]) = (mDay["GGT"][int(element1.MoveInDate.Time.Day())-1]) + 1
+				} else if element1.Name == "Cedarwood Apartments" || element1.Name == "Greystone Apartments" || element1.Name == "Pineridge Apartments" ||
+					element1.Name == "Birchview Apartments" || element1.Name == "Maple Court Apartments" {
+					(mMonth["CLASSIC"][int(element1.MoveInDate.Time.Month())-1]) = (mMonth["CLASSIC"][int(element1.MoveInDate.Time.Month())-1]) + 1
+					(mDay["CLASSIC"][int(element1.MoveInDate.Time.Day())-1]) = (mDay["CLASSIC"][int(element1.MoveInDate.Time.Day())-1]) + 1
+				} else if element1.Name == "256 Duplex" || element1.Name == "243 House" || element1.Name == "555 House" ||
+					element1.Name == "489 House" || element1.Name == "607 House" {
+					(mMonth["HOUSE"][int(element1.MoveInDate.Time.Month())-1]) = (mMonth["HOUSE"][int(element1.MoveInDate.Time.Month())-1]) + 1
+					(mDay["HOUSE"][int(element1.MoveInDate.Time.Day())-1]) = (mDay["HOUSE"][int(element1.MoveInDate.Time.Day())-1]) + 1
 				}
+
 			}
 		}
 	}
+
 	fmt.Println(mMonth)
 	fmt.Println(mDay)
-	fmt.Println(i)
+	//fmt.Println(i)
 }
 
 func homePage(w http.ResponseWriter, r *http.Request) {
