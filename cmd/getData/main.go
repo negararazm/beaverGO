@@ -69,6 +69,9 @@ type MoveIn = myTypes.MoveIn
 //PricingGroup includes FloorPlan, Community and name of the pricingGroup
 type PricingGroup = myTypes.PricingGroup
 
+//LeadToMoveInTime includes community, number of bedrooms and bathrooms, moveInDate, emailDate, ans phoneDate
+type LeadToMoveInTime = myTypes.LeadToMoveInTime
+
 var dbCon *sql.DB
 var err error
 var units []Unit
@@ -88,6 +91,7 @@ var leasePlaces []LeasePlace
 var leasePrimaryPlaceViews []LeasePrimaryPlaceView
 var moveIns []MoveIn
 var pricingGroups []PricingGroup
+var leadToMoveInTimes []LeadToMoveInTime
 
 func getUnits(w http.ResponseWriter, r *http.Request) {
 	//---------------------------------------------------
@@ -462,6 +466,45 @@ func getPricingGroups(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(pricingGroups)
 }
 
+func getLeadToMoveInTimes(w http.ResponseWriter, r *http.Request) {
+	query := `select c.name as community, f.bedrooms, f.bathrooms, l.moveInDate, x.emailDateReceived, y.phoneDateReceived from
+				(select b.id, min(a.startDate) as moveInDate from Lease b join LeasePlace a on a.lease = b.id group by b.id) l
+   				join LeasePrimaryPlaceView v on v.lease = l.id
+  			join Unit u on v.primaryPlace = u.id
+  			join FloorPlan f on f.id = u.floorPlan
+  			join Community c on f.propertyMarketing = c.id
+  			join Resident r on l.id = r.lease
+  			left join EntityPhoneNumber p on p.entity = r.entity
+  			left join EntityEmailAddress e on e.entity = r.entity
+  			left join
+				(select min(dateReceived) as emailDateReceived, emailAddress from Lead
+				where contactType like 'EMAIL' and emailAddress is not null 
+				group by emailAddress order by dateReceived) x on x.emailAddress = e.emailAddress
+   			left join
+				(select min(dateReceived) as phoneDateReceived, phoneNumber from Lead
+				where contactType like 'CALL' and phoneNumber is not null 
+				group by phoneNumber order by dateReceived) y on y.phoneNumber = p.phoneNumber
+   			where (u.unitType like 'APARTMENT' or u.unitType like 'TOWNHOME' OR u.unitType like 'HOUSE')
+   			order by c.name, f.bedrooms, f.bathrooms, l.moveInDate;`
+	results, err := dbCon.Query(query)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for results.Next() {
+		var leadToMoveInTime LeadToMoveInTime
+		err = results.Scan(&leadToMoveInTime.Community, &leadToMoveInTime.Bedrooms, &leadToMoveInTime.Bathrooms, &leadToMoveInTime.MoveInDate,
+			&leadToMoveInTime.EmailDateReceived, &leadToMoveInTime.PhoneDateReceived)
+		if err != nil {
+			panic(err.Error())
+		}
+		leadToMoveInTimes = append(leadToMoveInTimes, leadToMoveInTime)
+	}
+
+	fmt.Println("Endpoint Hit: All MoveIns Endpoint")
+	json.NewEncoder(w).Encode(leadToMoveInTimes)
+}
+
 func dbConnect() (*sql.DB, error) {
 	db, err := sql.Open("mysql", "negar:E%ycRw4MxjR6u!M2YpvDN9Cq6d^tT58n@tcp(production.cm4fwnwaa3mf.us-east-1.rds.amazonaws.com:3306)/production?parseTime=true")
 	if err != nil {
@@ -584,6 +627,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/leasePrimaryPlaceViews", getLeasePrimaryPlaceView).Methods("GET")
 	myRouter.HandleFunc("/moveIns", getMoveIns).Methods("GET")
 	myRouter.HandleFunc("/pricingGroups", getPricingGroups).Methods("GET")
+	myRouter.HandleFunc("/leadToMoveInTimes", getLeadToMoveInTimes).Methods("GET")
 	//myRouter.HandleFunc("/units", postUnits).Methods("POST")
 	//myRouter.HandleFunc("/units/{name}", oneUnit).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8083", myRouter))

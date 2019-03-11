@@ -184,9 +184,19 @@ type MoveIn struct {
 	MoveInDate NullTime        `json:"moveInDate"`
 }
 
-//PricingGroup includes Community, primary and name of the pricingGroup
+//PricingGroup includes community, number of bedrooms and name of the pricingGroup
 type PricingGroup struct {
-	Community string  `json:"community"`
-	Bedrooms  float64 `json:"bedrooms"`
-	Name      string  `json:"name"`
+	Community string          `json:"community"`
+	Bedrooms  sql.NullFloat64 `json:"bedrooms"`
+	Name      string          `json:"name"`
+}
+
+//LeadToMoveInTime includes community, number of bedrooms and bathrooms, moveInDate, emailDate, ans phoneDate
+type LeadToMoveInTime struct {
+	Community         string          `json:"community"`
+	Bedrooms          sql.NullFloat64 `json:"bedrooms"`
+	Bathrooms         sql.NullFloat64 `json:"bathrooms"`
+	MoveInDate        NullTime        `json:"moveInDate"`
+	EmailDateReceived NullTime        `json:"emailDateReceived"`
+	PhoneDateReceived NullTime        `json:"phoneDateReceived"`
 }
